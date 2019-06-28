@@ -1,9 +1,11 @@
 ##############################################################################
 ################### Data Preprocessing Sectors/Sentiment/FARMA5 ##############
-##########################       Alexander Doebele      ######################
+###################            and static Regression            ##############
+###################              Alexander Doebele              ##############
 ##############################################################################
 
 
+##Part 1: Data preprocessing
 require(lubridate)
 
 setwd("/Users/alexd/Desktop/Masterarbeit/Sector Reg/Original")
@@ -94,3 +96,44 @@ Sent = subset(Sent, Date >="2016-01-01" & Date <= "2019-03-01")
 
 #Return to global environment:
 list2env(sectors,globalenv())
+
+#########################################################################################################################
+
+##Part 2: Static Regression
+library(dynlm)
+
+#Aggregate data into weekly levels (by mean values):
+Estate_Return       = setNames(aggregate(Return~End_of_Week, FUN=mean, data=Estate, na.rm=TRUE),c("Date","Estate_Return"))
+Commu_Return        = setNames(aggregate(Return~End_of_Week, FUN=mean, data=Commu, na.rm=TRUE),c("Date","Commu_Return"))
+Consumer_dis_Return = setNames(aggregate(Return~End_of_Week, FUN=mean, data=Consumer_dis, na.rm=TRUE),c("Date","Consumer_dis_Return"))
+Consumer_st_Return  = setNames(aggregate(Return~End_of_Week, FUN=mean, data=Consumer_st, na.rm=TRUE),c("Date","Consumer_st_Return"))
+Energy_Return       = setNames(aggregate(Return~End_of_Week, FUN=mean, data=Energy, na.rm=TRUE),c("Date","Energy_Return"))
+Financials_Return   = setNames(aggregate(Return~End_of_Week, FUN=mean, data=Financials, na.rm=TRUE),c("Date","Financials_Return"))
+Health_Return       = setNames(aggregate(Return~End_of_Week, FUN=mean, data=Health, na.rm=TRUE),c("Date","Health_Return"))
+Indust_Return       = setNames(aggregate(Return~End_of_Week, FUN=mean, data=Indust, na.rm=TRUE),c("Date","Indust_Return"))
+Information_Return  = setNames(aggregate(Return~End_of_Week, FUN=mean, data=Information, na.rm=TRUE),c("Date","Information_Return"))
+
+Sentiment           = setNames(aggregate(Sentiment~End_of_Week, FUN=mean, data=Sent, na.rm=TRUE),c("Date","Sentiment"))
+Controlls           = setNames(aggregate(cbind(Mkt.RF,SMB,HML,RMW,CMA,RF)~End_of_Week, FUN=mean, data=Farma, na.rm=TRUE),c("Date","Mkt.RF","SMB","HML","RMW","CMA","RF"))
+
+
+Finance_Returns = Financials_Return$Financials_Return
+
+#Information_Returns = Information_Return$Information_Return
+
+#Energy_Returns = Energy_Return$Energy_Return
+
+Sentimen = Sentiment$Sentiment
+
+Mkt.RF = Controlls$Mkt.RF
+HML    = Controlls$HML
+SMB    = Controlls$SMB
+RMW    = Controlls$RMW
+CMA    = Controlls$CMA
+
+#Regression equation for financial returns:
+first = dynlm(Finance_Returns ~ Sentimen + Mkt.RF + HML + SMB + RMW + CMA)
+
+#Summary statistics
+summary(first)
+
