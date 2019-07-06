@@ -1,7 +1,9 @@
-# Sector-Sentiment-Preprocessing
-The R-File handles preprocessing of US-Sector, Sentiment(Estimated with articles from Coindesk.com) and FARMA5 data and performs a static regression.
+# Coindesk-Sentiment-Application-US-Sectors
 
-This File consists of two parts. In the first part the data is preprocessed and in the secon part,
-weekly levels are created and a static regression is performed.
+This section is part of the sentiment analysis on Coindesk news. It handles preprocessing of US-Sector, Sentiment(Estimated with articles from Coindesk.com) and FARMA5 data.
 
-Necessary Sector/Sentiment and FARMA5 Data is provided.
+A static regression is performed to examine the relationship between blockchain sentiment and returns in US sectors.
+
+Additionally, a GARCH(1,1) model is implemented for further analysis on conditional volatitily in returns.
+
+All necessary Sector/Sentiment and FARMA5 Data is provided.
